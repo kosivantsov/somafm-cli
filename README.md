@@ -1,7 +1,7 @@
 # Soma.FM bash/zsh cli interface
 
 This is a simple shell script that defines two functions: `soma` and `soma64` with bash and zsh autocompletion for the available stations in the highest and 64-bit encoding, respectfully.
-To make `soma` and `soma64` commands available, `somafmrc` available in this repo should be sourced from a file that is read by either bash or zsh (or both) when the shell is started. I use `$HOME/.aliases` for that by adding these lines (assuming `somafmrc` is located in `$HOME/.config/somafmrc`):
+To make `soma` and `soma64` commands available, `somafmrc` available in this repo should be sourced from a file that is read by either bash or zsh (or both) when the shell is started. This can be done, for example, in `$HOME/.aliases`, by adding these lines (assuming `somafmrc` is located in `$HOME/.config/somafmrc`):
 ``` bash
 if [ -f $HOME/.config/somafmrc ]; then
     source $HOME/.config/somafmrc
