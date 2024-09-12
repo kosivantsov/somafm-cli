@@ -1,0 +1,69 @@
+## SomaFM functions
+bold=$(tput bold)
+normal=$(tput sgr0)
+player=$HOME/bin/playurl
+soma() {
+    url="$1"
+    if [ -z "$url" ] ; then
+        url=$(somalist | head -1)
+    fi
+    player add http://somafm.com/"$url"
+}
+
+somalist() {
+    url=https://somafm.com/listen/
+    local_file=/tmp/somafile
+    if [ -s $local_file ] ; then
+        now=$(date +%s)
+        file_time=$(stat -f "%a" $local_file)
+        let elapsed=now-file_time
+        if [ $elapsed -gt 43200 ] ; then 
+            curl -s $url | awk -F '[<>]' '/MP3 PLS/ { print $6 }' | awk -F '"' '{print $2}' | tr -d \/ > $local_file
+        fi
+    else
+        curl -s $url | awk -F '[<>]' '/MP3 PLS/ { print $6 }' | awk -F '"' '{print $2}' | tr -d \/ > $local_file
+    fi
+    cat $local_file
+}
+
+soma64() {
+    url="$1"
+    if [ -z "$url" ] ; then
+        url=$(somalist64 | head -1)
+    fi
+    $player add https://somafm.com/"$url"
+}
+
+somalist64() {
+    url=https://somafm.com/listen/
+    local_file=/tmp/somafile64
+    if [ -s $local_file ] ; then
+        now=$(date +%s)
+        file_time=$(stat -f "%a" $local_file)
+        let elapsed=now-file_time
+        if [ $elapsed -gt 43200 ] ; then 
+            curl -s $url | awk -F '[<>]' '/AAC PLS/ { print $6 }' | awk -F '"' '{print $2}' | tr -d \/ | sed 's/130.pls/64.pls/g' > $local_file
+        fi
+    else
+        curl -s $url | awk -F '[<>]' '/AAC PLS/ { print $6 }' | awk -F '"' '{print $2}' | tr -d \/ | sed 's/130.pls/64.pls/g' > $local_file
+    fi
+    cat $local_file
+}
+
+shell="$(ps -p $$ -oargs=)"
+if [ "$shell" = "-zsh" ] ; then
+    _soma() {
+        compadd $(somalist)
+    }    
+    compdef _soma soma &> /dev/null
+    
+    _soma64() {
+        compadd $(somalist64)
+    }
+    compdef _soma64 soma64 &> /dev/null
+fi
+if [ "$shell" = "bash" ] ; then
+    complete -W "$(somalist)" soma
+    complete -W "$(somalist64)" soma64
+    complete -W "loungefm terrace acoustic chillout" loungefm
+fi
