@@ -1,7 +1,7 @@
-## SomaFM functions
-bold=$(tput bold)
-normal=$(tput sgr0)
+# Define which player to use
 player=$HOME/bin/playurl
+
+# soma command
 soma() {
     url="$1"
     if [ -z "$url" ] ; then
@@ -10,6 +10,7 @@ soma() {
     player add http://somafm.com/"$url"
 }
 
+# Get a list of available channels
 somalist() {
     url=https://somafm.com/listen/
     local_file=/tmp/somafile
@@ -26,6 +27,7 @@ somalist() {
     cat $local_file
 }
 
+# soma64 command
 soma64() {
     url="$1"
     if [ -z "$url" ] ; then
@@ -34,6 +36,7 @@ soma64() {
     $player add https://somafm.com/"$url"
 }
 
+# Get a list of available channels in 64-bit encoding
 somalist64() {
     url=https://somafm.com/listen/
     local_file=/tmp/somafile64
@@ -50,6 +53,7 @@ somalist64() {
     cat $local_file
 }
 
+# Add autocompletion for zsh and bash
 shell="$(ps -p $$ -oargs=)"
 if [ "$shell" = "-zsh" ] ; then
     _soma() {
@@ -65,5 +69,4 @@ fi
 if [ "$shell" = "bash" ] ; then
     complete -W "$(somalist)" soma
     complete -W "$(somalist64)" soma64
-    complete -W "loungefm terrace acoustic chillout" loungefm
 fi
