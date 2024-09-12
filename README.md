@@ -7,4 +7,4 @@ if [ -f $HOME/.config/somafmrc ]; then
 fi
 ```
 
-Variable [`player`](https://github.com/kosivantsov/somafm-cli/blob/7cb867bb5cc01d2044007c25ee720e9c15512555/somafmrc#L2) is set to [`playurl`](https://github.com/kosivantsov/playurl), another shell script that launches a user-defined player (including GUI players) and can get playable URLs for various resources, including YouTube video which will be played as audio-only. This variable can be set to any other player that accepts an URL as an argument.
+Variable [`player`](https://github.com/kosivantsov/somafm-cli/blob/master/somafmrc#L2) is set to [`playurl`](https://github.com/kosivantsov/playurl), another shell script that launches a user-defined player (including GUI players) and can get playable URLs for various resources, including YouTube video which will be played as audio-only. This variable can be set to any other player that accepts an URL as an argument.
