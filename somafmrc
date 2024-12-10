@@ -1,22 +1,37 @@
 # Define which player to use
 player=$HOME/bin/playurl
 
-# soma command
+## Nicer output
+bold=$(tput bold)
+normal=$(tput sgr0)
+
+## stat command on different OSes
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    # macOS
+    localstat() {
+        stat -f "%a" $@
+    }
+else
+    localstat() {
+        stat -c "%X" $@
+    }
+fi
+
+## SomaFM functions
 soma() {
     url="$1"
     if [ -z "$url" ] ; then
         url=$(somalist | head -1)
     fi
-    player add http://somafm.com/"$url"
+    $player add http://somafm.com/"$url"
 }
 
-# Get a list of available channels
 somalist() {
     url=https://somafm.com/listen/
     local_file=/tmp/somafile
     if [ -s $local_file ] ; then
         now=$(date +%s)
-        file_time=$(stat -f "%a" $local_file)
+        file_time=$(localstat ${local_file})
         let elapsed=now-file_time
         if [ $elapsed -gt 43200 ] ; then 
             curl -s $url | awk -F '[<>]' '/MP3 PLS/ { print $6 }' | awk -F '"' '{print $2}' | tr -d \/ > $local_file
@@ -27,7 +42,6 @@ somalist() {
     cat $local_file
 }
 
-# soma64 command
 soma64() {
     url="$1"
     if [ -z "$url" ] ; then
@@ -36,13 +50,12 @@ soma64() {
     $player add https://somafm.com/"$url"
 }
 
-# Get a list of available channels in 64-bit encoding
 somalist64() {
     url=https://somafm.com/listen/
     local_file=/tmp/somafile64
     if [ -s $local_file ] ; then
         now=$(date +%s)
-        file_time=$(stat -f "%a" $local_file)
+        file_time=$(localstat ${local_file})
         let elapsed=now-file_time
         if [ $elapsed -gt 43200 ] ; then 
             curl -s $url | awk -F '[<>]' '/AAC PLS/ { print $6 }' | awk -F '"' '{print $2}' | tr -d \/ | sed 's/130.pls/64.pls/g' > $local_file
@@ -53,12 +66,14 @@ somalist64() {
     cat $local_file
 }
 
-# Add autocompletion for zsh and bash
-shell="$(ps -p $$ -oargs=)"
-if [ "$shell" = "-zsh" ] ; then
+## Determine the shell in which the script runs
+shell="$(ps -p $$ -oargs= | sed 's/-//g' | awk '{print $1}')"
+
+## Add autocompletion in zsh
+if [ "$shell" = "zsh" ] ; then
     _soma() {
         compadd $(somalist)
-    }    
+    }
     compdef _soma soma &> /dev/null
     
     _soma64() {
@@ -66,6 +81,8 @@ if [ "$shell" = "-zsh" ] ; then
     }
     compdef _soma64 soma64 &> /dev/null
 fi
+
+## Add autocompletion in bash
 if [ "$shell" = "bash" ] ; then
     complete -W "$(somalist)" soma
     complete -W "$(somalist64)" soma64
